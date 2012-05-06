@@ -6,7 +6,7 @@ use Sys::Hostname qw/hostname/;
 use WebService::Prowl;
 use File::Basename qw/basename/;
 
-my $BATTERY_THRESHOLD = 10;
+my $BATTERY_THRESHOLD = $ENV{BATTERY_WARNING_THRESHOLD} || 10;
 
 ( my $hostname = hostname() ) =~ s/[.].*//;
 

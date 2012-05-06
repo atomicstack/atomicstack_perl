@@ -13,4 +13,12 @@ $ua->proxy(http => $ENV{http_proxy});
 
 my $response = $ua->get("http://www.google.com/search?q=$query");
 my $result   = pQuery( $response->decoded_content )->find('#topstuff .r b')->html;
+
+# flatten regular and non-breaking spaces
+$result =~ s/> </></g;
+$result =~ s/\240//g;
+
+# finally, strip all tags
+$result =~ s/<[^>]+?>//g;
+
 print "$result\n";

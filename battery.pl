@@ -29,7 +29,7 @@ foreach ( qx{ /usr/sbin/ioreg -nAppleSmartBattery } ) {
 
 my $percent_remaining = ( $status{CurrentCapacity} / $status{MaxCapacity} ) * 100;
 $percent_remaining = sprintf '%.02f', $percent_remaining;
-$status{IsCharging} ne 'yes' and $percent_remaining < $BATTERY_THRESHOLD and $prowl_description = "$percent_remaining% remaining";
+$status{IsCharging} ne 'Yes' and $percent_remaining < $BATTERY_THRESHOLD and $prowl_description = "$percent_remaining% remaining";
 
 exit unless $prowl_description;
 

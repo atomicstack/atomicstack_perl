@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 function die() {
@@ -7,13 +6,14 @@ function die() {
 }
 
 URL=$1
-test -z "$URL" && URL="http://cpan.weepeetelecom.nl/src/perl-5.12.3.tar.bz2"
+test -z "$URL" && URL="http://cpan.weepeetelecom.nl/src/perl-5.16.1.tar.bz2"
 
 test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2
 
 TARBALL=$(basename $URL)
-VERSION=$(basename $TARBALL .tar.bz2)
-PREFIX=$HOME/$VERSION
+RELEASE=$(basename $TARBALL .tar.bz2)
+VERSION_NUM=${RELEASE/perl-/}
+PREFIX=$HOME/$RELEASE
 PERL_LIB=$PREFIX/lib
 ARCH_LIB=$PREFIX/archlib
 BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
@@ -23,7 +23,7 @@ trap "echo removing $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
 cd "$BUILD_DIR" && ( wget -O "$BUILD_DIR/$TARBALL" $URL || curl $URL > "$BUILD_DIR/$TARBALL" )
 ( test -f "$TARBALL" && test -s "$TARBALL" ) || die "can't find $TARBALL"
 
-echo untarring $TARBALL && tar -xjf "$BUILD_DIR/$TARBALL" && cd "$BUILD_DIR/$VERSION"
+echo untarring $TARBALL && tar -xjf "$BUILD_DIR/$TARBALL" && cd "$BUILD_DIR/$RELEASE"
 test -f Configure || die "can't find Configure in $PWD"
 
 ./Configure                         \
@@ -39,11 +39,13 @@ test -f Configure || die "can't find Configure in $PWD"
 test -f Makefile || die "can't find Makefile in $PWD"
 
 make
-test -x perl || die "can't find freshly built perl binary in $PWD"
+( test -x perl || test -x "perl$VERSION_NUM" ) || die "can't find freshly built perl/perl$VERSION_NUM binary in $PWD"
 
 test -n "$TEST_PERL" && ( make test || die "test suite failed" )
 
 make install
-test -x "$PREFIX/bin/perl" || die "can't find installed perl binary in $PREFIX/bin"
 
-echo "export PATH=$PREFIX/bin:$PATH"
+test -x "$PREFIX/bin/perl$VERSION_NUM" || die "can't find installed perl$VERSION_NUM binary in $PREFIX/bin"
+test -x "$PREFIX/bin/perl" || ( ln -s $PREFIX/bin/perl$VERSION_NUM $PREFIX/bin/perl; ln -s $PREFIX/bin/cpan$VERSION_NUM $PREFIX/bin/cpan )
+
+echo -e "\n\nexport PATH=$PREFIX/bin:$PREFIX/site/bin:\$PATH\n\n"

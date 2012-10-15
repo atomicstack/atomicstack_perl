@@ -8,7 +8,7 @@ function die() {
 URL=$1
 test -z "$URL" && URL="http://cpan.weepeetelecom.nl/src/perl-5.16.1.tar.bz2"
 
-test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2
+test -x "/usr/bin/make" || die "no make! (apt-get install build-essential? or maybe it's Xcode?)"
 
 TARBALL=$(basename $URL)
 RELEASE=$(basename $TARBALL .tar.bz2)

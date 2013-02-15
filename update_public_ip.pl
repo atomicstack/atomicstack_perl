@@ -13,7 +13,7 @@ chomp( my @public_ips = IO::File->new($ARGV[0])->getlines );
 my $current_ip;
 my ($current_ip) = map { s/.*?$RE{net}{IPv4}{-keep}.*/$1/r } 
                  grep { m/whois[-]ip/ }
-                 split /\n/ => qx{/usr/bin/wget -q -O - --timeout=5 http://ip.seveas.net};
+                 split /\n/ => qx{wget -q -O - --timeout=5 http://ip.seveas.net};
                  # IO::File->new("seveas.html" => 'r')->getlines;
 
 my ($previous_ip) = ( $public_ips[-1] =~ m/$RE{net}{IPv4}{-keep}/ );

@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use File::Basename qw/basename/;
+
+my $dir = pop @ARGV;
+
+die "$dir isn't a dir" unless -d $dir;
+
+for my $f ( @ARGV ) {
+    my $basename = basename "$f";
+
+    if ( -f "$dir/$basename" ) {
+        warn "$dir/$basename exists, skipping";
+        next;
+    }
+
+    local $/ = \10485760;
+
+    open my $pv, '-|', qq{pv -W -N '$basename' '$f'};
+    open my $out, ">", "$dir/$basename";
+    $out->autoflush(1);
+
+    until ( $pv->eof ) {
+        my $buffer = <$pv>;
+        syswrite($out, $buffer);
+    }
+
+}

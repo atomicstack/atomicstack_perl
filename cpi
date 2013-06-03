@@ -11,6 +11,11 @@ die "$dir isn't a dir" unless -d $dir;
 for my $f ( @ARGV ) {
     my $basename = basename "$f";
 
+    if ( -d $f ) {
+      warn "$f is a dir! skipping";
+      next;
+    }
+
     if ( -f "$dir/$basename" ) {
         warn "$dir/$basename exists, skipping";
         next;

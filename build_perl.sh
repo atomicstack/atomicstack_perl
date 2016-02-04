@@ -1,51 +1,51 @@
 #!/bin/bash
 
+set -x
+
+BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
+trap "echo removing $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
+
+function get_args() {
+  test -f "$1" && LOCAL_PATH=$1 && TARBALL_PATH=$1 && return
+  test -n "$1" && URL=$1
+  if [[ $1 =~ ^perl[-]5 ]]; then
+    URL="http://www.cpan.org/src/5.0/${1}.tar.bz2"
+  fi
+  test -z "$1" && URL="http://www.cpan.org/src/5.0/perl-5.22.0.tar.bz2"
+}
+
+function get_vars() {
+  test -n "$LOCAL_PATH" && TARBALL=$(basename $TARBALL_PATH)
+  test -n "$URL"        && TARBALL=$(basename $URL)
+}
+
+function get_src() {
+  test -z "$URL" && return 0
+  TARBALL_PATH="$BUILD_DIR/$TARBALL"
+  echo "fetching URL $URL..."
+  wget -O "$TARBALL_PATH" $URL 2>/dev/null || curl $URL > "$TARBALL_PATH" 2>/dev/null
+}
+
 function die() {
-  echo "$1" 1>&2
+  echo $* 1>&2
   exit 1
 }
 
-URL=$1
-test -z "$URL" && URL="http://cpan.weepeetelecom.nl/src/perl-5.16.1.tar.bz2"
+get_args $1
+get_vars
+get_src
 
-test -x "/usr/bin/make" || die "no make! (apt-get install build-essential? or maybe it's Xcode?)"
+test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2
 
-TARBALL=$(basename $URL)
-RELEASE=$(basename $TARBALL .tar.bz2)
-VERSION_NUM=${RELEASE/perl-/}
-PREFIX=$HOME/$RELEASE
-PERL_LIB=$PREFIX/lib
-ARCH_LIB=$PREFIX/archlib
-BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
+TARBALL=$(basename $TARBALL_PATH)
+VERSION=$(basename $TARBALL_PATH .tar.bz2)
+PREFIX=$HOME/$VERSION
 
-trap "echo removing $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
+# die "\$URL: $URL, \$TARBALL_PATH: $TARBALL_PATH, \$LOCAL_PATH: $LOCAL_PATH"
 
-cd "$BUILD_DIR" && ( wget -O "$BUILD_DIR/$TARBALL" $URL || curl $URL > "$BUILD_DIR/$TARBALL" )
-( test -f "$TARBALL" && test -s "$TARBALL" ) || die "can't find $TARBALL"
-
-echo untarring $TARBALL && tar -xjf "$BUILD_DIR/$TARBALL" && cd "$BUILD_DIR/$RELEASE"
-test -f Configure || die "can't find Configure in $PWD"
-
-./Configure                         \
-  -des                              \
-  -Dusedevel                        \
-  -Dprefix=$PREFIX                  \
-  -Dinc_version_list=none           \
-  -Dprivlib=$PERL_LIB               \
-  -Dsitelib=$PERL_LIB               \
-  -Darchlib=$ARCH_LIB               \
-  -Dsitearch=$ARCH_LIB
-
-test -f Makefile || die "can't find Makefile in $PWD"
-
-make
-( test -x perl || test -x "perl$VERSION_NUM" ) || die "can't find freshly built perl/perl$VERSION_NUM binary in $PWD"
-
-test -n "$TEST_PERL" && ( make test || die "test suite failed" )
-
-make install
-
-test -x "$PREFIX/bin/perl$VERSION_NUM" || die "can't find installed perl$VERSION_NUM binary in $PREFIX/bin"
-test -x "$PREFIX/bin/perl" || ( ln -s $PREFIX/bin/perl$VERSION_NUM $PREFIX/bin/perl; ln -s $PREFIX/bin/cpan$VERSION_NUM $PREFIX/bin/cpan )
-
-echo -e "\n\nexport PATH=$PREFIX/bin:$PREFIX/site/bin:\$PATH\n\n"
+cd "$BUILD_DIR"
+test -f "$TARBALL_PATH" && echo untarring $TARBALL && tar -xjf "$TARBALL_PATH" && cd "$BUILD_DIR/$VERSION"
+test -f Configure && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$PREFIX/lib -Darchlib=$PREFIX/lib -Dsitearch=$PREFIX/lib -Dsitelib=$PREFIX/lib && make
+test -f Configure && test -f Makefile && test -n "$TEST_PERL" && make test
+test -f Configure && test -x perl && make install
+test -x "$PREFIX/bin/perl" && echo "PATH=$PREFIX/bin:$PATH"

@@ -35,7 +35,8 @@ get_args $1
 get_vars
 get_src
 
-test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev
+# assuming this is a freshly built debian box...
+test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev libevent-dev libncurses-dev
 
 TARBALL=$(basename $TARBALL_PATH)
 VERSION=$(basename $TARBALL_PATH .tar.bz2)

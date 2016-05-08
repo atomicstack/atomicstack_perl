@@ -11,7 +11,7 @@ function get_args() {
   if [[ $1 =~ ^perl[-]5 ]]; then
     URL="http://www.cpan.org/src/5.0/${1}.tar.bz2"
   fi
-  test -z "$1" && URL="http://www.cpan.org/src/5.0/perl-5.22.0.tar.bz2"
+  test -z "$1" && URL="http://www.cpan.org/src/5.0/perl-5.24.0.tar.bz2"
 }
 
 function get_vars() {
@@ -35,7 +35,7 @@ get_args $1
 get_vars
 get_src
 
-test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2
+test -x "/usr/bin/make" || sudo apt-get install build-essential zip unzip bzip2 libssl-dev zlib1g-dev
 
 TARBALL=$(basename $TARBALL_PATH)
 VERSION=$(basename $TARBALL_PATH .tar.bz2)

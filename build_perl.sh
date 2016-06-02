@@ -36,7 +36,7 @@ get_vars
 get_src
 
 # assuming this is a freshly built debian box...
-( test -x "/usr/bin/make" && test -x '/usr/bin/cc' ) || sudo apt-get install build-essential pkg-config zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev libevent-dev libncurses-dev
+( test -x "/usr/bin/make" && test -x '/usr/bin/cc' ) || sudo apt-get install build-essential pkg-config autoconf zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev libevent-dev libncurses-dev
 
 TARBALL=$(basename $TARBALL_PATH)
 VERSION=$(basename $TARBALL_PATH .tar.bz2)

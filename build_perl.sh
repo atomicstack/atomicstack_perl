@@ -2,7 +2,8 @@
 
 set -x
 
-BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
+[[ -z "$BUILD_DIR" ]] && BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
+[[ -z "$DEST_DIR"  ]] && DEST_DIR=$HOME
 trap "echo removing $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
 
 function get_args() {

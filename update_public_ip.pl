@@ -15,9 +15,13 @@ use Sys::Hostname;
 chomp( my @public_ips = IO::File->new($ARGV[0])->getlines );
 my $current_ip;
 
-chomp ( my $current_ip = qx{/usr/bin/wget -q -O - --timeout=5 http://ip.xort.nl:3000} );
+chomp ( my $current_ip = qx{/usr/bin/wget -q -O - --timeout=5 https://ip.xort.nl} );
+
+$ENV{DEBUG} and say "current_ip=$current_ip";
 
 my ($previous_ip) = ( $public_ips[-1] =~ m/$RE{net}{IPv4}{-keep}/ );
+
+$ENV{DEBUG} and say "previous_ip=$previous_ip";
 
 chomp($current_ip, $previous_ip);
 

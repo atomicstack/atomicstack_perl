@@ -15,7 +15,7 @@ use Sys::Hostname;
 chomp( my @public_ips = IO::File->new($ARGV[0])->getlines );
 my $current_ip;
 
-chomp ( my $current_ip = qx{/usr/bin/wget -q -O - --timeout=5 https://ip.xort.nl} );
+chomp ( my $current_ip = qx{/usr/bin/wget --user-agent="wget\@$hostname" -q -O - --timeout=5 https://ip.xort.nl} );
 
 $ENV{DEBUG} and say "current_ip=$current_ip";
 

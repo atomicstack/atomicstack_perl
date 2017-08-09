@@ -3,21 +3,13 @@
 use strict;
 use Data::Dumper;
 use Sys::Hostname qw/hostname/;
-use WebService::Prowl;
 use File::Basename qw/basename/;
 
 my $BATTERY_THRESHOLD = $ENV{BATTERY_WARNING_THRESHOLD} || 10;
 
 ( my $hostname = hostname() ) =~ s/[.].*//;
 
-my $apikey = $ENV{PROWL_KEY} or die "missing PROWL_KEY environment variable";
-
-my $ws = WebService::Prowl->new(apikey => $apikey);
-
-my $prowl_app      = $hostname;
-my $prowl_event    = basename $0;
-my $prowl_priority = 2;
-my $prowl_description;
+my $message;
 
 my %status;
 
@@ -27,11 +19,21 @@ foreach ( qx{ /usr/sbin/ioreg -nAppleSmartBattery } ) {
   /\"(IsCharging)\"\s+=\s+(\w+)/      and $status{$1} = $2;
 }
 
+$ENV{DEBUG} and print Dumper(\%status);
+
 my $percent_remaining = ( $status{CurrentCapacity} / $status{MaxCapacity} ) * 100;
 $percent_remaining = sprintf '%.02f', $percent_remaining;
-$status{IsCharging} ne 'Yes' and $percent_remaining < $BATTERY_THRESHOLD and $prowl_description = "$percent_remaining% remaining";
+$status{IsCharging} ne 'Yes' and $percent_remaining < $BATTERY_THRESHOLD and $message = "$percent_remaining% remaining";
 
-exit unless $prowl_description;
+exit unless $message;
 
-die $ws->error() unless
-$ws->add('event' => $prowl_event, application => $prowl_app, description => $prowl_description, priority => $prowl_priority);
+my @prowl_command = (
+    "$ENV{HOME}/bin/prowl" =>
+    '-a' => basename($0),
+    '-t' => $hostname,
+    '-m' => $message,
+);
+
+$ENV{DEBUG} and print Dumper(\@prowl_command);
+
+system @prowl_command;

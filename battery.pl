@@ -14,16 +14,22 @@ my $message;
 my %status;
 
 foreach ( qx{ /usr/sbin/ioreg -nAppleSmartBattery } ) {
-  /\"(MaxCapacity)\"\s+=\s+(\d+)/     and $status{$1} = $2;
-  /\"(CurrentCapacity)\"\s+=\s+(\d+)/ and $status{$1} = $2;
-  /\"(IsCharging)\"\s+=\s+(\w+)/      and $status{$1} = $2;
+  /\"(MaxCapacity)\"\s+=\s+(\d+)/           and $status{$1} = $2;
+  /\"(CurrentCapacity)\"\s+=\s+(\d+)/       and $status{$1} = $2;
+  /\"(ExternalChargeCapable)\"\s+=\s+(\w+)/ and $status{$1} = $2;
 }
 
-$ENV{DEBUG} and print Dumper(\%status);
-
 my $percent_remaining = ( $status{CurrentCapacity} / $status{MaxCapacity} ) * 100;
-$percent_remaining = sprintf '%.02f', $percent_remaining;
-$status{IsCharging} ne 'Yes' and $percent_remaining < $BATTERY_THRESHOLD and $message = "$percent_remaining% remaining";
+my $percent_remaining = $status{percent_remaining} = sprintf '%.02f', $percent_remaining;
+$status{ExternalChargeCapable} ne 'Yes' and $percent_remaining < $BATTERY_THRESHOLD and $message = "$percent_remaining% remaining";
+# $message = "$percent_remaining% remaining";
+
+$ENV{DEBUG} and print Dumper({
+    %status,
+    message => $message,
+    battery_threshold => $BATTERY_THRESHOLD,
+    battery_is_below_threshold => ( $percent_remaining < $BATTERY_THRESHOLD ),
+});
 
 exit unless $message;
 

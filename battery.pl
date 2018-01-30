@@ -5,7 +5,9 @@ use Data::Dumper;
 use Sys::Hostname qw/hostname/;
 use File::Basename qw/basename/;
 
-my $BATTERY_THRESHOLD = $ENV{BATTERY_WARNING_THRESHOLD} || 10;
+$Data::Dumper::Sortkeys = 1;
+
+my $BATTERY_THRESHOLD = $ENV{BATTERY_WARNING_THRESHOLD} || 15;
 
 ( my $hostname = hostname() ) =~ s/[.].*//;
 

@@ -10,9 +10,9 @@ function get_args() {
   test -f "$1" && LOCAL_PATH=$1 && TARBALL_PATH=$1 && return
   test -n "$1" && URL=$1
   if [[ $1 =~ ^perl[-]5 ]]; then
-    URL="http://www.cpan.org/src/5.0/${1}.tar.bz2"
+    URL="https://www.cpan.org/src/5.0/${1}.tar.bz2"
   fi
-  test -z "$1" && URL="http://www.cpan.org/src/5.0/perl-5.26.1.tar.bz2"
+  test -z "$1" && URL="https://www.cpan.org/src/5.0/perl-5.26.1.tar.bz2"
 }
 
 function get_vars() {
@@ -40,7 +40,13 @@ get_src
 ( test -x "/usr/bin/make" && test -x '/usr/bin/cc' ) || sudo apt-get install build-essential pkg-config autoconf zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev libevent-dev libncurses-dev
 
 TARBALL=$(basename $TARBALL_PATH)
-VERSION=$(basename $TARBALL_PATH .tar.bz2)
+if [[ "$TARBALL_PATH" =~ [.]tar[.]gz$ ]]; then
+    VERSION=$(basename $TARBALL_PATH .tar.bz2)
+elif [[ "$TARBALL_PATH" =~ [.]tar[.]bz2$ ]]; then
+    VERSION=$(basename $TARBALL_PATH .tar.gz)
+else
+    die "don't know how to strip extension from $TARBALL_PATH"
+fi
 PREFIX=$HOME/$VERSION
 
 # die "\$URL: $URL, \$TARBALL_PATH: $TARBALL_PATH, \$LOCAL_PATH: $LOCAL_PATH"

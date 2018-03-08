@@ -18,12 +18,15 @@ my %status;
 foreach ( qx{ /usr/sbin/ioreg -nAppleSmartBattery } ) {
   /\"(MaxCapacity)\"\s+=\s+(\d+)/           and $status{$1} = $2;
   /\"(CurrentCapacity)\"\s+=\s+(\d+)/       and $status{$1} = $2;
+  /\"(DesignCapacity)\"\s+=\s+(\d+)/        and $status{$1} = $2;
   /\"(ExternalChargeCapable)\"\s+=\s+(\w+)/ and $status{$1} = $2;
   /\"(ExternalConnected)\"\s+=\s+(\w+)/     and $status{$1} = $2;
 }
 
 my $percent_remaining = ( $status{CurrentCapacity} / $status{MaxCapacity} ) * 100;
 my $percent_remaining = $status{percent_remaining} = sprintf '%.02f', $percent_remaining;
+my $percent_degraded  = sprintf '%.04f', 100 - ( ( $status{MaxCapacity} / $status{DesignCapacity} ) * 100 );
+
 my $should_alert = ( $status{ExternalChargeCapable} ne 'Yes' and $percent_remaining < $BATTERY_THRESHOLD );
 $should_alert and $message = "$percent_remaining% remaining";
 
@@ -31,6 +34,7 @@ $ENV{DEBUG} and print Dumper({
     %status,
     message => $message,
     battery_threshold => $BATTERY_THRESHOLD,
+    percent_degraded => $percent_degraded,
     battery_is_below_threshold => ( $percent_remaining < $BATTERY_THRESHOLD ),
 });
 

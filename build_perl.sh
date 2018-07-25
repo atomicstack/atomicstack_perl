@@ -12,7 +12,7 @@ function get_args() {
   if [[ $1 =~ ^perl[-]5 ]]; then
     URL="https://www.cpan.org/src/5.0/${1}.tar.bz2"
   fi
-  test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-5.26.1.tar.bz2"
+  test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-5.28.0.tar.gz"
 }
 
 function get_vars() {
@@ -42,8 +42,10 @@ get_src
 TARBALL=$(basename $TARBALL_PATH)
 if [[ "$TARBALL_PATH" =~ [.]tar[.]gz$ ]]; then
     VERSION=$(basename $TARBALL_PATH .tar.gz)
+    TAR_DECOMPRESS_PARAM=z
 elif [[ "$TARBALL_PATH" =~ [.]tar[.]bz2$ ]]; then
     VERSION=$(basename $TARBALL_PATH .tar.bz2)
+    TAR_DECOMPRESS_PARAM=j
 else
     die "don't know how to strip extension from $TARBALL_PATH"
 fi
@@ -52,7 +54,7 @@ PREFIX=$HOME/$VERSION
 # die "\$URL: $URL, \$TARBALL_PATH: $TARBALL_PATH, \$LOCAL_PATH: $LOCAL_PATH"
 
 cd "$BUILD_DIR"
-test -f "$TARBALL_PATH" && echo untarring $TARBALL && tar -xjf "$TARBALL_PATH" && cd "$BUILD_DIR/$VERSION"
+test -f "$TARBALL_PATH" && echo untarring $TARBALL && tar -${TAR_DECOMPRESS_PARAM}xf "$TARBALL_PATH" && cd "$BUILD_DIR/$VERSION"
 test -f Configure && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$PREFIX/lib -Darchlib=$PREFIX/lib -Dsitearch=$PREFIX/lib -Dsitelib=$PREFIX/lib && make
 test -f Configure && test -f Makefile && test -n "$TEST_PERL" && make test
 test -f Configure && test -x perl && make install

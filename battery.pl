@@ -16,6 +16,7 @@ my $message;
 my %status;
 
 foreach ( qx{ /usr/sbin/ioreg -nAppleSmartBattery } ) {
+  /\"(CycleCount)\"\s+=\s+(\d+)/            and $status{$1} = $2;
   /\"(MaxCapacity)\"\s+=\s+(\d+)/           and $status{$1} = $2;
   /\"(CurrentCapacity)\"\s+=\s+(\d+)/       and $status{$1} = $2;
   /\"(DesignCapacity)\"\s+=\s+(\d+)/        and $status{$1} = $2;

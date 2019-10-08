@@ -42,10 +42,10 @@ get_src
 TARBALL=$(basename $TARBALL_PATH)
 if [[ "$TARBALL_PATH" =~ [.]tar[.]gz$ ]]; then
     VERSION=$(basename $TARBALL_PATH .tar.gz)
-    TAR_DECOMPRESS_PARAM=z
+    # TAR_DECOMPRESS_PARAM=z
 elif [[ "$TARBALL_PATH" =~ [.]tar[.]bz2$ ]]; then
     VERSION=$(basename $TARBALL_PATH .tar.bz2)
-    TAR_DECOMPRESS_PARAM=j
+    # TAR_DECOMPRESS_PARAM=j
 else
     die "don't know how to strip extension from $TARBALL_PATH"
 fi

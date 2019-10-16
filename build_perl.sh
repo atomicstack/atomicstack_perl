@@ -58,4 +58,4 @@ test -f "$TARBALL_PATH" && echo untarring $TARBALL && tar -${TAR_DECOMPRESS_PARA
 test -f Configure && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$PREFIX/lib -Darchlib=$PREFIX/lib -Dsitearch=$PREFIX/lib -Dsitelib=$PREFIX/lib && make
 test -f Configure && test -f Makefile && test -n "$TEST_PERL" && make test
 test -f Configure && test -x perl && make install
-test -x "$PREFIX/bin/perl" && echo -e "PATH=$PREFIX/bin:$PATH\n$PREFIX/bin/cpan App::cpanminus && $PREFIX/bin/cpanm git@github.com:atomicstack/Task-BeLike-MATTK.git"
+test -x "$PREFIX/bin/perl" && echo -e "PATH=$PREFIX/bin:$PATH\n$PREFIX/bin/cpan App::cpanminus && $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip"

@@ -20,6 +20,7 @@ foreach ( qx{ /usr/sbin/ioreg -nAppleSmartBattery } ) {
   /\"(MaxCapacity)\"\s+=\s+(\d+)/           and $status{$1} = $2;
   /\"(CurrentCapacity)\"\s+=\s+(\d+)/       and $status{$1} = $2;
   /\"(DesignCapacity)\"\s+=\s+(\d+)/        and $status{$1} = $2;
+  /\"(CycleCount)\"\s+=\s+(\d+)/            and $status{$1} = $2;
   /\"(ExternalChargeCapable)\"\s+=\s+(\w+)/ and $status{$1} = $2;
   /\"(ExternalConnected)\"\s+=\s+(\w+)/     and $status{$1} = $2;
 }

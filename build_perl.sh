@@ -12,7 +12,7 @@ function get_args() {
   if [[ $1 =~ ^perl[-]5 ]]; then
     URL="https://www.cpan.org/src/5.0/${1}.tar.bz2"
   fi
-  test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz"
+  test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-5.30.1.tar.gz"
 }
 
 function get_vars() {

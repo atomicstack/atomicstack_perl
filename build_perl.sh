@@ -11,8 +11,10 @@ trap "echo removing $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
 function get_args() {
   test -f "$1" && LOCAL_PATH=$1 && TARBALL_PATH=$1 && return
   test -n "$1" && URL=$1
-  if [[ $1 =~ ^perl[-]5 ]]; then
-    URL="https://www.cpan.org/src/5.0/${1}.tar.bz2"
+  if [[ $1 =~ ^perl[-]5.*[0-9] ]]; then
+    URL="https://www.cpan.org/src/5.0/${1}.tar.gz"
+  elif [[ $1 =~ ^5.*[0-9] ]]; then
+    URL="https://www.cpan.org/src/5.0/perl-${1}.tar.gz"
   fi
   test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-${LATEST_PERL_VERSION}.tar.gz"
 }

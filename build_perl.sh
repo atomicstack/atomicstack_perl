@@ -1,5 +1,7 @@
 #!/bin/bash
 
+LATEST_PERL_VERSION=5.30.2
+
 set -x
 
 [[ -z "$BUILD_DIR" ]] && BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
@@ -12,7 +14,7 @@ function get_args() {
   if [[ $1 =~ ^perl[-]5 ]]; then
     URL="https://www.cpan.org/src/5.0/${1}.tar.bz2"
   fi
-  test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-5.30.1.tar.gz"
+  test -z "$URL" && URL="https://www.cpan.org/src/5.0/perl-${LATEST_PERL_VERSION}.tar.gz"
 }
 
 function get_vars() {

@@ -3,6 +3,7 @@
 LATEST_PERL_VERSION=5.30.2
 
 set -x
+renice -n 19 -p $$
 
 [[ -z "$BUILD_DIR" ]] && BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
 [[ -z "$DEST_DIR"  ]] && DEST_DIR=$HOME
@@ -62,4 +63,4 @@ test -f "$TARBALL_PATH" && echo untarring $TARBALL && tar -${TAR_DECOMPRESS_PARA
 test -f Configure && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$PREFIX/lib -Darchlib=$PREFIX/lib -Dsitearch=$PREFIX/lib -Dsitelib=$PREFIX/lib && make
 test -f Configure && test -f Makefile && test -n "$TEST_PERL" && make test
 test -f Configure && test -x perl && make install
-test -x "$PREFIX/bin/perl" && echo -e "PATH=$PREFIX/bin:$PATH\n$PREFIX/bin/cpan App::cpanminus && $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip"
+test -x "$PREFIX/bin/perl" && echo -e "PATH=$PREFIX/bin:$PATH\n$PREFIX/bin/cpan App::cpanminus && nice $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip"

@@ -64,4 +64,4 @@ pushd "$BUILD_DIR"
 [[ -f Configure          ]] && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$PREFIX/lib -Darchlib=$PREFIX/lib -Dsitearch=$PREFIX/lib -Dsitelib=$PREFIX/lib && nice make -j 4
 [[ -n "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && make test && make install
 [[ -z "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && make install
-[[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\n$PREFIX/bin/cpan App::cpanminus && $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip"
+[[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\n$PREFIX/bin/cpan App::cpanminus && $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip $( $PREFIX/bin/cpan-outdated )"

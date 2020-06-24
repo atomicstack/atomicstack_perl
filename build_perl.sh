@@ -1,8 +1,8 @@
 #!/bin/bash
 
-LATEST_PERL_VERSION=5.30.2
-
 set -x
+
+LATEST_PERL_VERSION=5.32.0
 # TEST_PERL=1
 renice -n 19 -p $$
 

@@ -71,3 +71,10 @@ pushd "$BUILD_DIR"
 [[ -n "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && nice make test && make install
 [[ -z "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && make install
 [[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\nnice $PREFIX/bin/cpan App::cpanminus App::cpanoutdated && nice $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip \$( $PREFIX/bin/cpan-outdated )"
+
+################################################################################
+################################################################################
+
+if [[ -n "$TMUX" ]]; then
+  tmux set-environment -g PERLPATH ""
+fi

@@ -2,7 +2,8 @@
 
 set -x
 
-LATEST_PERL_VERSION=5.32.0
+# TODO: determine this via HTTP request/s
+LATEST_PERL_VERSION=5.32.1
 # TEST_PERL=1
 renice -n 19 -p $$
 

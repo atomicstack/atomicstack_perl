@@ -3,21 +3,25 @@
 use 5.14.2;
 use warnings;
 
+use Data::Dumper;
 use Sys::Hostname qw/hostname/;
+use Getopt::Long;
 
-chdir "$ENV{HOME}/.dotfiles";
+GetOptions(
+  'identity_file=s' => \(my $identity_file),
+  'repository=s'    => \(my $repo_dir),
+  'verbose+'        => \(my $verbose),
+);
 
-# filename format determined by:
-# https://gist.github.com/atomicstack/696fa0ba8473adc842c0fecfe8068b7d
+$identity_file or die "no identity_file parameter found";
+-r $identity_file or die "missing/unreadable identity file $identity_file";
 
-# keyname=$(printf "%s_dotfiles_deploy_%s" $(hostname -s) $(date +%F))
-# ssh-keygen -C $keyname -f "$HOME/.ssh/${keyname}.pem" -t ed25519 -N ""
+$repo_dir or die "no repo_dir parameter found";
+-d $repo_dir or die "bad repo dir $repo_dir";
 
-my ($hostname) = map { s/[.].*//r } hostname();
-my ($key_filename) = grep { m/${hostname}_dotfiles_deploy_\d{4}-\d{2}-\d{2}/ } glob "$ENV{HOME}/.ssh/*dotfiles_deploy*.pem";
-die "couldn't find key filename :(" unless ( $key_filename and -f $key_filename );
+chdir $repo_dir;
 
-$ENV{GIT_SSH_COMMAND} = qq{ssh -v -o ClearAllForwardings=yes -o "IdentitiesOnly=yes" -i $key_filename};
+$ENV{GIT_SSH_COMMAND} = qq{ssh -v -o ClearAllForwardings=yes -o "IdentitiesOnly=yes" -i $identity_file};
 my @output = qx{git fetch --all 2>&1};
 my $exit_signal = $? >> 127;
 my $exit_code = $? >> 8;
@@ -25,4 +29,4 @@ my $exit_code = $? >> 8;
 if    ($exit_signal) { warn "git fetch died of signal $exit_signal" }
 elsif ($exit_code)   { warn "git fetch terminated with exit code $exit_code" }
 
-( $exit_signal or $exit_code ) and say @output;
+( $exit_signal or $exit_code or $verbose ) and say @output;

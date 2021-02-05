@@ -10,6 +10,9 @@ chdir "$ENV{HOME}/.dotfiles";
 # filename format determined by:
 # https://gist.github.com/atomicstack/696fa0ba8473adc842c0fecfe8068b7d
 
+# keyname=$(printf "%s_dotfiles_deploy_%s" $(hostname -s) $(date +%F))
+# ssh-keygen -C $keyname -f "$HOME/.ssh/${keyname}.pem" -t ed25519 -N ""
+
 my ($hostname) = map { s/[.].*//r } hostname();
 my ($key_filename) = grep { m/${hostname}_dotfiles_deploy_\d{4}-\d{2}-\d{2}/ } glob "$ENV{HOME}/.ssh/*dotfiles_deploy*.pem";
 die "couldn't find key filename :(" unless ( $key_filename and -f $key_filename );

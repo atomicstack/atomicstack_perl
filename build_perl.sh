@@ -2,14 +2,13 @@
 
 set -x
 
-# TODO: determine this via HTTP request/s
 LATEST_PERL_VERSION=5.34.0
 # TEST_PERL=1
 renice -n 19 -p $$
 
 [[ -z "$BUILD_DIR" ]] && BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
 [[ -z "$DEST_DIR"  ]] && DEST_DIR=$HOME
-trap "echo removing $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
+trap "echo removing BUILD_DIR $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
 
 ################################################################################
 ################################################################################
@@ -22,7 +21,15 @@ function get_args() {
   elif [[ $1 =~ ^5.*[0-9] ]]; then
     URL="https://www.cpan.org/src/5.0/perl-${1}.tar.gz"
   fi
-  [[ -z "$URL" ]] && URL="https://www.cpan.org/src/5.0/perl-${LATEST_PERL_VERSION}.tar.gz"
+
+  if [[ -z "$URL" ]]; then
+    URL=$( wget --timeout=2 -qO- https://fastapi.metacpan.org/v1/release/perl | jq --raw-output '.download_url' )
+  fi
+
+  if [[ -z "$URL" ]]; then
+    echo "falling back to hard-coded release version $LATEST_PERL_VERSION, this could be out-of-date!" 1>&2
+    URL="https://www.cpan.org/src/5.0/perl-${LATEST_PERL_VERSION}.tar.gz"
+  fi
 }
 
 function get_vars() {
@@ -42,15 +49,22 @@ function die() {
   exit 1
 }
 
+# assuming this is a freshly built debian box...
+function install_stuff() {
+  if [[ -n "$( command -v apt-get )" ]]; then
+    sudo apt-get install \
+      build-essential pkg-config autoconf zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev libevent-dev libncurses-dev wget jq
+  fi
+}
+
 ################################################################################
 ################################################################################
+
+[[ -x "/usr/bin/make" && -x '/usr/bin/cc' ]] || install_stuff
 
 get_args $1
 get_vars
 get_src
-
-# assuming this is a freshly built debian box...
-[[ -x "/usr/bin/make" && -x '/usr/bin/cc' ]] || sudo apt-get install build-essential pkg-config autoconf zip unzip bzip2 libssl-dev zlib1g-dev libreadline-dev libexpat-dev libevent-dev libncurses-dev
 
 # can't just use $LATEST_PERL_VERSION to construct $VERSION as we could be
 # installing a user-specified release, not just the latest one

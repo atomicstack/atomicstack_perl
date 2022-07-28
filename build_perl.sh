@@ -27,7 +27,7 @@ function get_args() {
   fi
 
   if [[ -z "$URL" ]]; then
-    echo "falling back to hard-coded release version $LATEST_PERL_VERSION, this could be out-of-date!" 1>&2
+    echo "$(tput setaf 9)falling back to hard-coded release version $LATEST_PERL_VERSION, this could be out-of-date!$(tput sgr0)" 1>&2
     URL="https://www.cpan.org/src/5.0/perl-${LATEST_PERL_VERSION}.tar.gz"
   fi
 }
@@ -90,7 +90,7 @@ pushd "$BUILD_DIR"
 [[ -f Configure          ]] && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$L -Darchlib=$L -Dsitearch=$L -Dsitelib=$L $TAINT_FLAGS && nice make -j 4
 [[ -n "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && nice make test && make install
 [[ -z "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && make install
-[[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\nnice $PREFIX/bin/cpan App::cpanminus App::cpanoutdated && nice $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip \$( $PREFIX/bin/cpan-outdated )"
+[[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\nnice $PREFIX/bin/cpan CPAN::DistnameInfo App::cpanminus App::cpanoutdated && nice $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip \$( $PREFIX/bin/cpan-outdated )"
 
 ################################################################################
 ################################################################################

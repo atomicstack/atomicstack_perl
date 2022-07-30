@@ -40,7 +40,7 @@ function get_vars() {
 function get_src() {
   [[ -z "$URL" ]] && return 0
   TARBALL_PATH="$BUILD_DIR/$TARBALL"
-  echo "fetching URL $URL..."
+  echo "$(tput setaf 10)fetching URL $URL...$(tput sgr0)"
   wget -O "$TARBALL_PATH" $URL 2>/dev/null || curl $URL > "$TARBALL_PATH" 2>/dev/null
 }
 

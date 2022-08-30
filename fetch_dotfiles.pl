@@ -22,7 +22,7 @@ $repo_dir or die "no repo_dir parameter found";
 chdir $repo_dir;
 
 $ENV{GIT_SSH_COMMAND} = qq{ssh -v -o ClearAllForwardings=yes -o "IdentitiesOnly=yes" -i $identity_file};
-my @output = qx{git fetch --all 2>&1};
+my @output = qx{git fetch --multiple origin xort 2>&1};
 my $exit_signal = $? >> 127;
 my $exit_code = $? >> 8;
 

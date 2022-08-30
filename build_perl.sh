@@ -85,12 +85,14 @@ fi
 
 # die "\$URL: $URL, \$TARBALL_PATH: $TARBALL_PATH, \$LOCAL_PATH: $LOCAL_PATH"
 
+INSTALL_FIRST="CPAN::DistnameInfo App::cpanminus App::cpanoutdated LWP::Protocol::https"
+
 pushd "$BUILD_DIR"
 [[ -f "$TARBALL_PATH"    ]] && echo untarring $TARBALL && tar -xf "$TARBALL_PATH" && pushd "$BUILD_DIR/$VERSION"
 [[ -f Configure          ]] && ./Configure -des -Dprefix=$PREFIX -Dinc_version_list=none -Dprivlib=$L -Darchlib=$L -Dsitearch=$L -Dsitelib=$L $TAINT_FLAGS && nice make -j 4
 [[ -n "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && nice make test && make install
 [[ -z "$TEST_PERL"       ]] && [[ -f Makefile ]] && [[ -x perl ]] && make install
-[[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\nnice $PREFIX/bin/cpan CPAN::DistnameInfo App::cpanminus App::cpanoutdated && nice $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip \$( $PREFIX/bin/cpan-outdated )"
+[[ -x "$PREFIX/bin/perl" ]] && echo -e "PATH=$PREFIX/bin:\$PATH\nnice $PREFIX/bin/cpan $INSTALL_FIRST && nice $PREFIX/bin/cpanm https://github.com/atomicstack/Task-BeLike-MATTK/archive/master.zip \$( $PREFIX/bin/cpan-outdated )"
 
 ################################################################################
 ################################################################################

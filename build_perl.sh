@@ -6,9 +6,10 @@ LATEST_PERL_VERSION=5.34.0
 # TEST_PERL=1
 renice -n 19 -p $$
 
-[[ -z "$BUILD_DIR" ]] && BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
-[[ -z "$DEST_DIR"  ]] && DEST_DIR=$HOME
-trap "echo removing BUILD_DIR $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
+if [[ ! -n "$DRY_RUN" ]]; then
+  [[ -z "$BUILD_DIR" ]] && BUILD_DIR=$(mktemp -d /tmp/perl.XXXXXXXXX)
+  trap "echo removing BUILD_DIR $BUILD_DIR...; rm -rf $BUILD_DIR; echo" EXIT
+fi
 
 ################################################################################
 ################################################################################
@@ -29,6 +30,11 @@ function get_args() {
   if [[ -z "$URL" ]]; then
     echo "$(tput setaf 9)falling back to hard-coded release version $LATEST_PERL_VERSION, this could be out-of-date!$(tput sgr0)" 1>&2
     URL="https://www.cpan.org/src/5.0/perl-${LATEST_PERL_VERSION}.tar.gz"
+  fi
+
+  if [[ -n "$DRY_RUN" ]]; then
+    echo $URL
+    exit
   fi
 }
 

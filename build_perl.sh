@@ -2,7 +2,7 @@
 
 set -x
 
-LATEST_PERL_VERSION=5.34.0
+LATEST_PERL_VERSION=5.38.0
 # TEST_PERL=1
 renice -n 19 -p $$
 
